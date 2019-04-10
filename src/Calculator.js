@@ -23,43 +23,51 @@ class Calculator extends Component {
       operator1 : null,
       operator2 : null,
       operand : null,
-      total : 0,
+      total: '',
     }
     this.getButtonData = this.getButtonData.bind(this)
   }
 
-  getButtonData (value) {
-    let digit = !isNaN(value)
+  getButtonData (value, isOperand) {
+
+    // return if the first value is operands
+    let storedValue = this.state.total
+    if (!storedValue && isNaN(value)) {
+      return
+    }
+
     let operator1 = this.state.operator1
     let operand = this.state.operand
     let operator2 = this.state.operator2
 
     // Perform calculation
-    if (operator1 && operand && operator2 && !digit) {
+    if (operator1 && operand && operator2 && (isOperand || (value === '='))) {
       let total = this.performCalculation (operator1, operand, operator2)
       this.setState({
-        total: total + value,
+        total: (value === '=') ? total : (total + value),
         operator1: total,
-        operand: value,
+        operand: (value === '=') ? null : value,
         operator2: null,
       })
       return
+    } else if (value === '=') {
+      return
     }
 
-    if (digit && operand === null) {
+    if (!isOperand && operand === null) {
       this.setState({operator1: (operator1 === null) ? value : (operator1 + value)})
-    } else if (!digit && operand === null) {
-      this.setState({operand: value})
-    } else if (digit && operand) {
+    } else if (isOperand && operand === null) {
+      this.setState({operand: (value === '=') ? null : value})
+    } else if (!isOperand && operand) {
       this.setState({operator2: (operator2 === null) ? value : (operator2 + value)})
     }
 
-    this.setState({total: (this.state.total === 0) ? value : this.state.total + value})
+    this.setState({total: this.state.total + value})
   }
 
   performCalculation (operator1, operand, operator2) {
     switch (operand) {
-      case '+': return (operator1 + operator2);
+      case '+': return (parseInt(operator1) + parseInt(operator2));
       case '-': return (operator1 - operator2);
       case '*': return (operator1 * operator2);
       case '/': return (operator1 / operator2);
@@ -74,12 +82,12 @@ class Calculator extends Component {
           <Label updateLabelData={this.state.total} />
           <div className='section' style={styles.sectionStyle}>
             {Object.keys(NumberData).map((value) => {
-              return <Button key={value} displayName={NumberData[value]} getButtonData={this.getButtonData} width='33.33%' />
+              return <Button key={value} displayName={NumberData[value]} getButtonData={this.getButtonData} width='33.33%' isOperand={false} />
             })}
           </div>
           <div className='aside' style={styles.asideStyle}>
             {Object.keys(SpecialChatData).map((value) => {
-              return <Button key={value} displayName={SpecialChatData[value]} getButtonData={this.getButtonData} width='100%' />
+              return <Button key={value} displayName={SpecialChatData[value]} getButtonData={this.getButtonData} width='100%' isOperand={true} />
             })}
           </div>
         </Card>

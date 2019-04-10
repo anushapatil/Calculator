@@ -6,23 +6,21 @@ const buttonStyle = {
   padding: '10px',
 }
 
+let pressedSpecialChar = false
 class Button extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      pressedSpecialChar : false,
-    }
     this.handleOnClick = this.handleOnClick.bind(this);
   }
 
   handleOnClick (event) {
-    if (!this.state.pressedSpecialChar) {
-      this.props.getButtonData(event.target.value)
+    if (!pressedSpecialChar) {
+      this.props.getButtonData(event.target.value, this.props.isOperand)
     }
-    if (isNaN(event.target.value)) { // pressed on operands
-      this.setState({pressedSpecialChar: true})
+    if (this.props.isOperand) { // pressed on operands
+      pressedSpecialChar = true
     } else {
-      this.setState({pressedSpecialChar: false})
+      pressedSpecialChar = false
     }
   }
 

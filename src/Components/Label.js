@@ -9,7 +9,7 @@ const LabelStyle = {
 function Label(props) {
   return (
     <div  style={LabelStyle}>
-      <label value={props.updateLabelData}> 
+      <label value={props.updateLabelData} defaultValue={0}> 
         {props.updateLabelData} 
       </label>
     </div>
